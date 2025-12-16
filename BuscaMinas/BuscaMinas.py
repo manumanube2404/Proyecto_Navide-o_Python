@@ -53,7 +53,7 @@ def inicializar_tablero(filas, columnas, casillaCerrada):
 
         fila_juego = [casillaCerrada] * columnas
         tableroJuego.append(fila_juego)
-        
+
     return tableroCompleto, tableroJuego
 
 # colocación de minas
@@ -69,7 +69,7 @@ def colocar_minas(tablero, filas, columnas, minas, minaSimbolo):
         if tablero[filaRandom][columnaRandom] != minaSimbolo:
             tablero[filaRandom][columnaRandom] = minaSimbolo
             minas_colocadas += 1
-            
+
     # Retornamos el tablero modificado con las minas
     return tablero
 
@@ -79,14 +79,14 @@ def imprimir_matriz(tablero):
 
 def main(filas, columnas, minas, casillaCerrada, minaSimbolo):
     tableroCompleto, tableroJuego = inicializar_tablero(filas, columnas, casillaCerrada)
-    
+
     tableroCompleto = colocar_minas(tableroCompleto, filas, columnas, minas, minaSimbolo)
     print("\nTABLERO QUE VERÁ EL JUGADOR\n")
     imprimir_matriz(tableroJuego)
     print("\n","-"*37, "\n")
     print("\nTABLERO COMPLETO PARA DEBUGGEAR\n")
     imprimir_matriz(tableroCompleto)
-    
+
     # Aquí iría el resto de la lógica del juego aún no hecha
 
 # Ejecución del programa
