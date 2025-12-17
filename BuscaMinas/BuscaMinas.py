@@ -12,8 +12,6 @@ numeros="1234567890"
 letras="ABCDEFGHIJ"
 filas = 0
 columnas = 0
-won = False
-lost = False
 
 # redefinimos las variables según el nivel escogido
 match nivel:
@@ -77,6 +75,56 @@ def imprimir_matriz(tablero):
     for fila in tablero:
         print(" ".join(map(str, fila)))
 
+    #Pregunta al usuario la casilla que quiere marcar en un rango el 0-n
+def preguntar(tableroJuego, tableroCompleto, filas,columnas):
+    while True:
+        #Si ganar devuelve true, paramos el flujo del codigo
+        if ganar(tableroJuego,filas,columnas):
+            print("GANASTE")
+            break
+        fila_prueba = int(input(f"Introduce la fila de 0 a {filas-1} : "))
+        columna_prueba = int(input(f"Introduce la columna de 0 a {columnas-1}: "))
+        minasCercanas=0
+        #Si el numero no es valido pide otro intento
+        if fila_prueba >= filas or columna_prueba >= columnas:
+            print("Esa posicion no existe, por favor vuelva a intentarlo")
+        else:
+            # Comprueba si la casilla es " 0 " en el mapa original
+            if tableroCompleto[fila_prueba][columna_prueba] == " 0 ":
+                #Los bucles comprueban los alrrededores de la casilla seleccionada para saber si hay minas cerca
+                for i in range(-1,2):
+                    for j in range (-1,2):
+                        #Si las filas o las columnas no existen para la ejecucucion (>n)
+                        if i==1 and fila_prueba==filas-1: 
+                            break
+                        if j==1 and columna_prueba==columnas-1:
+                            break
+                        #Cuenta si en el mapa original hay alguna " X " cerca 
+                        if tableroCompleto[fila_prueba+i][columna_prueba+j] == minaSimbolo:
+                            #Si las filas o las columnas no existen para la ejecucucion (<n) 
+                            if fila_prueba+i!=-1 and columna_prueba+j!= -1:
+                                minasCercanas+=1
+
+                tableroJuego[fila_prueba][columna_prueba]= str(f" {minasCercanas} ")
+                imprimir_matriz(tableroJuego)
+
+            else:
+                #Si en la posicion no hay un " 0 " significa que es una mina, por lo que el jugador perdio
+                imprimir_matriz(tableroCompleto)
+                print("PERDISTE")
+                break
+
+    
+    #Si los " . " son iguales al numero de minas existentes retornamos true
+def ganar(tableroJuego,filas, columnas):
+    puntos=0
+    for i in range(filas):
+        for j in range(columnas):
+            if tableroJuego[i][j] == casillaCerrada:
+                puntos+=1
+    if puntos==minas:
+        return True
+        
 def main(filas, columnas, minas, casillaCerrada, minaSimbolo):
     tableroCompleto, tableroJuego = inicializar_tablero(filas, columnas, casillaCerrada)
 
@@ -86,8 +134,6 @@ def main(filas, columnas, minas, casillaCerrada, minaSimbolo):
     print("\n","-"*37, "\n")
     print("\nTABLERO COMPLETO PARA DEBUGGEAR\n")
     imprimir_matriz(tableroCompleto)
-
-    # Aquí iría el resto de la lógica del juego aún no hecha
-
+    preguntar(tableroJuego,tableroCompleto, filas, columnas)
 # Ejecución del programa
 main(filas, columnas, minas, casillaCerrada, minaSimbolo)
