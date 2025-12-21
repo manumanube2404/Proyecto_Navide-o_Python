@@ -21,6 +21,49 @@ elif opcion == 3:
     print("Saliendo del juego. ¡Hasta luego!")
     exit()
 
+while True:
+    try:
+        menu = input("Elige qué modo quieres jugar:\n1. Juego contra la computadora\n2. Juego para dos jugadores\nElección: ")
+        opcion = int(menu)
+    except ValueError:
+        print("Por favor, introduce un número válido.")
+        continue
+    else:
+        if opcion not in (1,2):
+            print("Introduce una opción válida.")
+            continue
+        else:
+            break
+
+#switch de modo de juego
+if opcion == 1:
+    print("Elige el nivel de dificultad:")
+    print("1- Fácil\n2- Medio\n3- Difícil")
+    nivel = input("Nivel: ")
+
+    while(True):
+        if nivel == "1":
+            break #en cada opcion generar distintos parámetros como el tamaño del tablero, el número y tamaño de los barcos o el número de disparos permitidos
+        elif nivel == "2":
+            break
+        elif nivel == "3":
+            break 
+        else: 
+            print("Opción inválida")
+
+elif opcion == 2:
+    print("Iniciando 1 Vs 1. Buena suerte jugadores.")
+    tablero_aleatorio = input("¿Quéreis tableros aleatorios? (s/n)")
+    
+    while(True):
+        if tablero_aleatorio == "s":
+            break #aqui meter un randomizador para la posicion de los barcos
+        elif tablero_aleatorio == "n":
+            break
+        else: 
+            print("Opción inválida")
+
+
 def inicializar_tablero(filas, columnas):
     tablero = []
     for _ in range(filas):
