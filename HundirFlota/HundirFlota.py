@@ -2,19 +2,20 @@ import random
 
 while True:
     try:
-        menu = input("¡Bienvenido al Hundir la flota del grupo de los pesaos!\nElige qué quieres hacer:\n1. Iniciar Juego\n2. Reglas\n3. Salir\nElección: ")
+        menu = input(
+            "¡Bienvenido al Hundir la flota del grupo de los pesaos!\nElige qué quieres hacer:\n1. Iniciar Juego\n2. Reglas\n3. Salir\nElección: ")
         opcion = int(menu)
     except ValueError:
         print("Por favor, introduce un número válido.")
         continue
     else:
-        if opcion not in (1,2,3):
+        if opcion not in (1, 2, 3):
             print("Introduce una opción válida.")
             continue
         else:
             break
 
-#aqui empieza el switch
+# aqui empieza el switch
 if opcion == 1:
     print("Iniciando el juego Hundir la flota... Aún no está hecho.")
 elif opcion == 2:
@@ -26,44 +27,45 @@ elif opcion == 3:
 # Raúl 21/12/2025 (solo las opciones despues de iniciar partida como vs IA o vs Jugador y modos de dificultad)
 while True:
     try:
-        menu = input("Elige qué modo quieres jugar:\n1. Juego contra la computadora\n2. Juego para dos jugadores\nElección: ")
+        menu = input(
+            "Elige qué modo quieres jugar:\n1. Juego contra la computadora\n2. Juego para dos jugadores\nElección: ")
         opcion = int(menu)
     except ValueError:
         print("Por favor, introduce un número válido.")
         continue
     else:
-        if opcion not in (1,2):
+        if opcion not in (1, 2):
             print("Introduce una opción válida.")
             continue
         else:
             break
 
-#switch de modo de juego
+# switch de modo de juego
 if opcion == 1:
     print("Elige el nivel de dificultad:")
     print("1- Fácil\n2- Medio\n3- Difícil")
     nivel = input("Nivel: ")
 
-    while(True):
+    while (True):
         if nivel == "1":
-            break #en cada opcion generar distintos parámetros como el tamaño del tablero, el número y tamaño de los barcos o el número de disparos permitidos
+            break  # en cada opcion generar distintos parámetros como el tamaño del tablero, el número y tamaño de los barcos o el número de disparos permitidos
         elif nivel == "2":
             break
         elif nivel == "3":
-            break 
-        else: 
+            break
+        else:
             print("Opción inválida")
 
 elif opcion == 2:
     print("Iniciando 1 Vs 1. Buena suerte jugadores.")
     tablero_aleatorio = input("¿Quéreis tableros aleatorios? (s/n)")
-    
-    while(True):
+
+    while (True):
         if tablero_aleatorio == "s":
-            break #aqui meter un randomizador para la posicion de los barcos
+            break  # aqui meter un randomizador para la posicion de los barcos
         elif tablero_aleatorio == "n":
             break
-        else: 
+        else:
             print("Opción inválida")
 
 
@@ -74,41 +76,50 @@ def inicializar_tablero(filas, columnas):
         tablero.append(fila)
     return tablero
 
-#aqui voy a meter funciones para más adelante implementarlas (Raúl 23/12/2025)
+# aqui voy a meter funciones para más adelante implementarlas (Raúl 23/12/2025)
 
-def disparar(atacante, defensor, fila, col): #atacante --> el jugador que dispara || defensor --> el jugador que recibe el disparo || fila, col --> la coordenada (fila columna) a la que se dispara
+
+# atacante --> el jugador que dispara || defensor --> el jugador que recibe el disparo || fila, col --> la coordenada (fila columna) a la que se dispara
+def disparar(atacante, defensor, fila, col):
     if defensor["propio"][fila][col] == " B ":
-        defensor["propio"][fila][col] = " X " #Marca el barco como tocado
-        atacante["disparos"][fila][col] = " X " #Marca el disparo como acierto en el tablero del atacante
+        defensor["propio"][fila][col] = " X "  # Marca el barco como tocado
+        # Marca el disparo como acierto en el tablero del atacante
+        atacante["disparos"][fila][col] = " X "
         print("Tocado")
     elif defensor["propio"][fila][col] == " ~ ":
-        defensor["propio"][fila][col] = " O " #Marca el disparo fallido en ambos tableros
+        # Marca el disparo fallido en ambos tableros
+        defensor["propio"][fila][col] = " O "
         atacante["disparos"][fila][col] = " O "
         print("Agua")
     else:
-        print("Coordenada ya disparada") #Para no repetir
+        print("Coordenada ya disparada")  # Para no repetir
 
-def pedir_coordenada(): #Funcion para pedir y validar coordenadas al usuario
+
+def pedir_coordenada():  # Funcion para pedir y validar coordenadas al usuario
     while True:
-        coord = input("Introduce coordenada (letra y número): ").upper() #Pedir coordenadas y poner en mayúscula por control de errores
-        if len(coord) >= 2: #Condicion para control de errores si solo seescribe 1 letra
-            fila = ord(coord[0]) - ord("A") #Convertir letra a número siendo A=0 || B=1 || C=2 etc...
-            col = int(coord[1:]) - 1 #Convierte número en índice siendo 1-->0 || 5-->4 || 10-->9
+        # Pedir coordenadas y poner en mayúscula por control de errores
+        coord = input("Introduce coordenada (letra y número): ").upper()
+        if len(coord) >= 2:  # Condicion para control de errores si solo seescribe 1 letra
+            # Convertir letra a número siendo A=0 || B=1 || C=2 etc...
+            fila = ord(coord[0]) - ord("A")
+            # Convierte número en índice siendo 1-->0 || 5-->4 || 10-->9
+            col = int(coord[1:]) - 1
             if 0 <= fila < 10 and 0 <= col < 10:
-                return fila, col #Devuelve (fila y columna)
+                return fila, col  # Devuelve (fila y columna)
         print("Coordenada inválida")
 
-def ha_perdido(estado): #Comprueba los barcos hundidos fila por fila (B es la marca de la casilla donde hay barco sin tocar/hundir)
+
+def ha_perdido(estado):  # Comprueba los barcos hundidos fila por fila (B es la marca de la casilla donde hay barco sin tocar/hundir)
     for fila in estado["propio"]:
-        if " B " in fila: #Comprueba la B en cada fila y duevuelve False si la hay
+        if " B " in fila:  # Comprueba la B en cada fila y duevuelve False si la hay
             return False
-    return True #Devuelve True si no existe ninguna B en ninguna fila
+    return True  # Devuelve True si no existe ninguna B en ninguna fila
 
 
 # apartado realizado por javier 22/12/2025
 
 def imprimir_tablero(tablero, ocultar_barcos=False):
-    # Imprime arriba los números 1..10 
+    # Imprime arriba los números 1..10
     print("    1  2  3  4  5  6  7  8  9 10")
     letras = "ABCDEFGHIJ"
 
@@ -140,11 +151,11 @@ def se_puede_colocar(tablero, casillas):
     columnas = len(tablero[0])
 
     for (f, c) in casillas:
-        #Dentro del tablero
+        # Dentro del tablero
         if f < 0 or f >= filas or c < 0 or c >= columnas:
             return False
 
-        #No solapar
+        # No solapar
         if tablero[f][c] == " B ":
             return False
 
@@ -208,12 +219,46 @@ def iniciar_1v1(tablero_aleatorio):
 
     print("\nJugador 2 - Tablero de disparos:")
     imprimir_tablero(j2["disparos"], ocultar_barcos=False)
-    
+
+    print("\nJugador 2 - Tablero de disparos:")
+    imprimir_tablero(j2["disparos"], ocultar_barcos=False)
+
     # hasta aqui lo de javier del dia 22
+
+    # dia 29122025 trabajo javier
+
+    while True:
+        # jugador1
+        print("\n tablero de disparos:")
+        imprimir_tablero(j1["disparos"], ocultar_barcos=False)
+
+        fila, col = pedir_coordenada()
+        disparar(j1, j2, fila, col)
+
+        if ha_perdido(j2):
+            print("\nprimero jugador gana")
+            break
+
+        # jugador2
+        print("\ntablero de disparos:")
+        imprimir_tablero(j2["disparos"], ocultar_barcos=False)
+
+        fila, col = pedir_coordenada()
+        disparar(j2, j1, fila, col)
+
+        if ha_perdido(j1):
+            print("\nsegundo jugador gana")
+            break
+
+        # dia 29122025 trabajo javier
+
+
 def main():
     tablero = inicializar_tablero(10, 10)
     for fila in tablero:
         print(" ".join(fila))
+
+
 if opcion == 1:
     main()
 if opcion == 2:
