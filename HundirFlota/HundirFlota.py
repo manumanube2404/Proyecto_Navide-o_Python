@@ -123,37 +123,49 @@ def ha_perdido(estado):  # Comprueba los barcos hundidos fila por fila (B es la 
 def imprimir_tablero(tablero, ocultar_barcos=False):
     # Imprime arriba los números 1..10
     print("    1  2  3  4  5  6  7  8  9 10")
+    # cadena de letra que etiqueta a cada fina
     letras = "ABCDEFGHIJ"
-
+    # bucle que recorre las filas del tablero donde i tendra los valores de 0 a 9
     for i in range(len(tablero)):
+        # fila es variable que guuarda una lista de las 10 celdas en el punto en el que crear_estado_jugador
         fila = tablero[i]
-        linea = ""
 
+        # en la variable linea se mona lo que se imprima de la fila
+        linea = ""
+        # lee cada elemento de la fila
         for celda in fila:
             # Si hay barco y hay que ocultarlo, mostramos agua
             if ocultar_barcos and celda == " B ":
                 linea += " ~ "
             else:
+                # si no se cumple se añade el contenido de esa celda a la linea
                 linea += celda
-
+        # al final se imprime la letra por la que va el programa y la linea que se forma con lo anterior
         print(letras[i] + " | " + linea)
 
 
 def crear_estado_jugador(filas=10, columnas=10):
-    # guardamos lo básico
+    # devuelve la estructura con datos
     return {
+        # crea un tablero vacio del propio jugador
         "propio": inicializar_tablero(filas, columnas),
+        # crea un tablero vacio que sirve para marcar los tiros que el jugador hace al rival
         "disparos": inicializar_tablero(filas, columnas),
-        "barcos": []  # cada barco será una lista de casillas [(f,c), (f,c)...]
+        # cada barco tendra una lista de casillas [(f,c), (f,c)...]
+        "barcos": []
     }
+
+# reglas para colocar barcos
 
 
 def se_puede_colocar(tablero, casillas):
+    # numero de filas del talero
     filas = len(tablero)
+    # numero de columnas donde tablero[0] es la primera hasta el 10
     columnas = len(tablero[0])
-
+    # recorre cada fila
     for (f, c) in casillas:
-        # Dentro del tablero
+        # se asegura de qu este dentro del tablero
         if f < 0 or f >= filas or c < 0 or c >= columnas:
             return False
 
@@ -161,65 +173,99 @@ def se_puede_colocar(tablero, casillas):
         if tablero[f][c] == " B ":
             return False
 
-        # No tocar
+        # recorre las filas de alrededor
         for ff in range(f - 1, f + 2):
+            # recorre columnas del alrededor
             for cc in range(c - 1, c + 2):
+                # comprueba que las casillas de alrededor estan dentro del tablero
                 if 0 <= ff < filas and 0 <= cc < columnas:
+                    # coprueba si alrededor hay un barco para no solapar
                     if tablero[ff][cc] == " B ":
                         return False
-
+    # si se cumple todo devuelve true
     return True
 
+# coloca barco en el tablero con el tamaño asignado en la variable tamaño
 
-def colocar_barco(estado_jugador, tamano):
+
+def colocar_barco(estado_jugador, tamaño):
+    # selecciona el tablero del jugador donde estan los barcos
     tablero = estado_jugador["propio"]
 
     while True:
+        # selecciona de manera aleatoria horizontal o vertical
         orientacion = random.choice(["H", "V"])
+        # selecciona de manera aleatoria una fila
+
         fila = random.randint(0, 9)
+        # selecciona de manera aleatoria una columna
+
         col = random.randint(0, 9)
 
-        # Creamos las casillas del barco
+        # se almacena las coordenadas del barco
         casillas = []
-        for i in range(tamano):
+        # recorre de i a tamaño menos 1 para construir el barco
+        for i in range(tamaño):
+            # si sale horizontal
             if orientacion == "H":
+                # añade casilla en esa fila y sus columnas consecutivas
                 casillas.append((fila, col + i))
+            # si sale vertical
+
             else:
+                # añade casilla en la fila consicutiva y en la misma columna
                 casillas.append((fila + i, col))
 
-        # colocamos y guardamos
+        # se comprueba que se cumplan las caracteristicas que se definieron anteriormente
         if se_puede_colocar(tablero, casillas):
-            for (f, c) in casillas:
-                tablero[f][c] = " B "
 
+            # recorre cada casilla valida
+            for (f, c) in casillas:
+                # marca los barcos con B
+                tablero[f][c] = " B "
+            # guarda el barco en la lista de barcos del jugador
             estado_jugador["barcos"].append(casillas)
             break
 
+# coloca todos los barcos en el tablero del jugador
+
 
 def colocar_flota(estado_jugador):
+    # tamaños de los barcos
     flota = [5, 4, 3, 3, 2]
+    # recorre cada tamaño disponible
     for tam in flota:
+        # coloca el barco del tamaño seleccionado
         colocar_barco(estado_jugador, tam)
+
+# inicia partida 1 vs 1 donde el tablero sera o no aleatorio
 
 
 def iniciar_1v1(tablero_aleatorio):
+    # crea los estados de los jugadores donde estara la lista de barcos y los tableros vacios
     j1 = crear_estado_jugador()
     j2 = crear_estado_jugador()
 
     if tablero_aleatorio == "s":
+        # en el caso de elegir aleatorio se colocaran los barcos de ambos jugadores automaticamente
         colocar_flota(j1)
         colocar_flota(j2)
 
     print("\nJugador 1 - Tablero propio:")
+    # imprime el tablero del primer jugador mostrando los barcos
     imprimir_tablero(j1["propio"], ocultar_barcos=False)
 
     print("\nJugador 1 - Tablero de disparos:")
+    # imprime el tablero de disparos del juagdor
     imprimir_tablero(j1["disparos"], ocultar_barcos=False)
 
     print("\nJugador 2 - Tablero propio:")
+    # imprime el tablero del segundo jugador mostrando los barcos
+
     imprimir_tablero(j2["propio"], ocultar_barcos=False)
 
     print("\nJugador 2 - Tablero de disparos:")
+    # imprime el tablero de disparos del segundo jugador
     imprimir_tablero(j2["disparos"], ocultar_barcos=False)
 
     print("\nJugador 2 - Tablero de disparos:")
@@ -233,21 +279,24 @@ def iniciar_1v1(tablero_aleatorio):
         # jugador1
         print("\n tablero de disparos:")
         imprimir_tablero(j1["disparos"], ocultar_barcos=False)
-
+        # pide las coordenadas al usuario
         fila, col = pedir_coordenada()
+        # el jugador 1 dispara al jugador 2
         disparar(j1, j2, fila, col)
-
+        # comprueba si le quedan barcos al segundo jugador para determinar el ganador
         if ha_perdido(j2):
             print("\nprimero jugador gana")
             break
 
         # jugador2
         print("\ntablero de disparos:")
+        # muestra tablero de disparos del segundo jugador
         imprimir_tablero(j2["disparos"], ocultar_barcos=False)
-
+        # pide coordenadas al segundo jugador
         fila, col = pedir_coordenada()
+        # jugador 2 dispara al 1
         disparar(j2, j1, fila, col)
-
+        # comprueba la cantidad de barcos del primer jugador para determinar al ganador
         if ha_perdido(j1):
             print("\nsegundo jugador gana")
             break
@@ -271,13 +320,15 @@ if opcion == 2:
 # Funciones añadidas
 
 # Limpia la pantalla de la consola para que otros jugadores no puedan ver tus movimientos
+
+
 def limpiar_pantalla():
     os.system("cls" if os.name == "nt" else "clear")
 
 
 def barco_hundido(estado, fila, col):
-    
-#Comprueba si el disparo ha hundido un barco completo
+
+    # Comprueba si el disparo ha hundido un barco completo
 
     for barco in estado["barcos"]:
         if (fila, col) in barco:
@@ -292,7 +343,7 @@ def barco_hundido(estado, fila, col):
 
 def colocar_barco_manual(estado, tamano):
 
-# Muestra el tablero
+    # Muestra el tablero
 
     imprimir_tablero(estado["propio"], ocultar_barcos=False)
     print(f"Coloca un barco de tamaño {tamano}")
@@ -357,7 +408,7 @@ def disparo_ia_dificil(estado):
     for f in range(10):
         for c in range(10):
             if estado["propio"][f][c] == " X ":
-                vecinos = [(f+1,c),(f-1,c),(f,c+1),(f,c-1)]
+                vecinos = [(f+1, c), (f-1, c), (f, c+1), (f, c-1)]
                 for vf, vc in vecinos:
                     if 0 <= vf < 10 and 0 <= vc < 10:
                         return vf, vc
@@ -369,7 +420,8 @@ def iniciar_vs_ia(nivel):
     ia = crear_estado_jugador()
 
     # colocación del jugador
-    elegir = input("¿Quieres implementar una colocación manual? (s/n): ").lower()
+    elegir = input(
+        "¿Quieres implementar una colocación manual? (s/n): ").lower()
     if elegir == "s":
         colocar_flota_manual(jugador)
     else:
