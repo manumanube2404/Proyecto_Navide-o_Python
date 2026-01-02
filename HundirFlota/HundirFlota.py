@@ -1,4 +1,6 @@
 import random
+import os
+import time
 
 while True:
     try:
@@ -263,3 +265,175 @@ if opcion == 1:
     main()
 if opcion == 2:
     iniciar_1v1(tablero_aleatorio)
+
+    # Fran 30/12/2025 (Aquí vamos a añadir el modo contra le IA, que seria la opcion juego contra la computadora y algunas funciones extra para que el juego sea más completo)
+
+# Funciones añadidas
+
+# Limpia la pantalla de la consola para que otros jugadores no puedan ver tus movimientos
+def limpiar_pantalla():
+    os.system("cls" if os.name == "nt" else "clear")
+
+
+def barco_hundido(estado, fila, col):
+    
+#Comprueba si el disparo ha hundido un barco completo
+
+    for barco in estado["barcos"]:
+        if (fila, col) in barco:
+            for (f, c) in barco:
+                if estado["propio"][f][c] == " B ":
+                    return False
+            return True
+    return False
+
+
+# Colocación manual de barcos
+
+def colocar_barco_manual(estado, tamano):
+
+# Muestra el tablero
+
+    imprimir_tablero(estado["propio"], ocultar_barcos=False)
+    print(f"Coloca un barco de tamaño {tamano}")
+
+    while True:
+        orientacion = input("Orientación (H/V): ").upper()
+        if orientacion not in ("H", "V"):
+            print("Orientación no válida")
+            continue
+
+            # pide la coordenada inicial
+        try:
+            fila, col = pedir_coordenada()
+        except:
+            print("Coordenada no válida")
+            continue
+
+            # genera las casillas que ocupará el barco
+        casillas = []
+        for i in range(tamano):
+            if orientacion == "H":
+                casillas.append((fila, col + i))
+            else:
+                casillas.append((fila + i, col))
+
+        # Comprueba si la casilla es válida para colocar el barco y lo coloca
+        if se_puede_colocar(estado["propio"], casillas):
+            for (f, c) in casillas:
+                estado["propio"][f][c] = " B "
+            estado["barcos"].append(casillas)
+            break
+        else:
+            print("No puedes colocar ese barco ahí")
+
+
+def colocar_flota_manual(estado):
+    flota = [5, 4, 3, 3, 2]
+    for tam in flota:
+        limpiar_pantalla()
+        colocar_barco_manual(estado, tam)
+
+
+# Fran 31/12/2025 (Aquí implementamos el modo contra la IA con distintos niveles de dificultad)
+
+# Funcionamiento de la IA para el 1 vs computadora
+
+def disparo_ia_facil():
+    return random.randint(0, 9), random.randint(0, 9)
+
+
+def disparo_ia_medio(tablero):
+    # disparo aleatorio pero evita repetir
+    while True:
+        f = random.randint(0, 9)
+        c = random.randint(0, 9)
+        if tablero[f][c] == " ~ ":
+            return f, c
+
+
+def disparo_ia_dificil(estado):
+    # intenta buscar alrededor de tocados
+    for f in range(10):
+        for c in range(10):
+            if estado["propio"][f][c] == " X ":
+                vecinos = [(f+1,c),(f-1,c),(f,c+1),(f,c-1)]
+                for vf, vc in vecinos:
+                    if 0 <= vf < 10 and 0 <= vc < 10:
+                        return vf, vc
+    return disparo_ia_facil()
+
+
+def iniciar_vs_ia(nivel):
+    jugador = crear_estado_jugador()
+    ia = crear_estado_jugador()
+
+    # colocación del jugador
+    elegir = input("¿Quieres colocación manual? (s/n): ").lower()
+    if elegir == "s":
+        colocar_flota_manual(jugador)
+    else:
+        colocar_flota(jugador)
+
+    # IA siempre automática
+    colocar_flota(ia)
+
+    # bucle principal de la partida
+
+    while True:
+        limpiar_pantalla()
+
+    # muestra tableros
+
+        print("\nTu tablero:")
+        imprimir_tablero(jugador["propio"], ocultar_barcos=False)
+
+        print("\nTus disparos:")
+        imprimir_tablero(jugador["disparos"], ocultar_barcos=False)
+
+    # turno del jugador
+
+        print("\nTU TURNO")
+        f, c = pedir_coordenada()
+        disparar(jugador, ia, f, c)
+
+        # Comprueba si has ganado contra la IA
+
+        if ha_perdido(ia):
+            print("¡Has ganado contra la IA!")
+            break
+
+        # turno de la IA
+
+        print("\nTurno de la IA...")
+        time.sleep(1)
+
+        if nivel == "1":
+            f, c = disparo_ia_facil()
+        elif nivel == "2":
+            f, c = disparo_ia_medio(jugador["propio"])
+        else:
+            f, c = disparo_ia_dificil(jugador)
+
+        disparar(ia, jugador, f, c)
+
+        if ha_perdido(jugador):
+            print("La IA te ha ganado.")
+            break
+
+
+# Activacion de funciones según el menú
+
+# Si se eligió modo 1v1 en tu menú anterior
+try:
+    if opcion == 2:
+        iniciar_1v1(tablero_aleatorio)
+except:
+    pass
+
+# Si se eligió jugar vs IA
+try:
+    if opcion == 1:
+        iniciar_vs_ia(nivel)
+except:
+    pass
