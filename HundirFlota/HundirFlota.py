@@ -325,7 +325,7 @@ def colocar_barco_manual(estado, tamano):
             estado["barcos"].append(casillas)
             break
         else:
-            print("No puedes colocar ese barco ahí")
+            print("No puedes colocar este barco ahí")
 
 
 def colocar_flota_manual(estado):
@@ -369,7 +369,7 @@ def iniciar_vs_ia(nivel):
     ia = crear_estado_jugador()
 
     # colocación del jugador
-    elegir = input("¿Quieres colocación manual? (s/n): ").lower()
+    elegir = input("¿Quieres implementar una colocación manual? (s/n): ").lower()
     if elegir == "s":
         colocar_flota_manual(jugador)
     else:
@@ -393,19 +393,19 @@ def iniciar_vs_ia(nivel):
 
     # turno del jugador
 
-        print("\nTU TURNO")
+        print("\nEs tu turno")
         f, c = pedir_coordenada()
         disparar(jugador, ia, f, c)
 
         # Comprueba si has ganado contra la IA
 
         if ha_perdido(ia):
-            print("¡Has ganado contra la IA!")
+            print("Le ganaste a ChatGPT")
             break
 
         # turno de la IA
 
-        print("\nTurno de la IA...")
+        print("\nTurno de ChatGPT")
         time.sleep(1)
 
         if nivel == "1":
@@ -418,7 +418,7 @@ def iniciar_vs_ia(nivel):
         disparar(ia, jugador, f, c)
 
         if ha_perdido(jugador):
-            print("La IA te ha ganado.")
+            print("ChatGPT te fulminó y te ha robado el puesto de trabajo >:D")
             break
 
 
