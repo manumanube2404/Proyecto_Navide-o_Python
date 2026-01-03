@@ -44,33 +44,78 @@ while True:
 
 # switch de modo de juego
 if opcion == 1:
-    print("Elige el nivel de dificultad:")
-    print("1- Fácil\n2- Medio\n3- Difícil")
-    nivel = input("Nivel: ")
+    while True:
+        print("Elige el nivel de dificultad:")
+        print("1- Fácil\n2- Medio\n3- Difícil")
+        nivel = input("Nivel: ")
 
-    while (True):
-        if nivel == "1":
-            break  # en cada opcion generar distintos parámetros como el tamaño del tablero, el número y tamaño de los barcos o el número de disparos permitidos
-        elif nivel == "2":
-            break
-        elif nivel == "3":
+        if nivel in ("1", "2", "3"): # Asi queda guardado el nivel y hace el break sin necesidad de poner varios "elif"
             break
         else:
             print("Opción inválida")
+
 
 elif opcion == 2:
     print("Iniciando 1 Vs 1. Buena suerte jugadores.")
-    tablero_aleatorio = input("¿Quéreis tableros aleatorios? (s/n)")
 
-    while (True):
-        if tablero_aleatorio == "s":
-            break  # aqui meter un randomizador para la posicion de los barcos
-        elif tablero_aleatorio == "n":
+    while True:
+        tablero_aleatorio = input("¿Queréis tableros aleatorios? (s/n): ").lower()
+        if tablero_aleatorio in ("s", "n"):
             break
         else:
             print("Opción inválida")
 
+# Colocación manual de barcos
+# Parte de Fran
+def colocar_barco_manual(estado, tamaño):
 
+    # Muestra el tablero
+
+    imprimir_tablero(estado["propio"], ocultar_barcos=False)
+    print(f"Coloca un barco de tamaño {tamaño}")
+
+    while True:
+        orientacion = input("Orientación (H/V): ").upper()
+        if orientacion not in ("H", "V"):
+            print("Orientación no válida")
+            continue
+
+            # pide la coordenada inicial
+        try:
+            fila, col = pedir_coordenada()
+        except:
+            print("Coordenada no válida")
+            continue
+
+            # genera las casillas que ocupará el barco
+        casillas = []
+        for i in range(tamaño):
+            if orientacion == "H":
+                casillas.append((fila, col + i))
+            else:
+                casillas.append((fila + i, col))
+
+        # Comprueba si la casilla es válida para colocar el barco y lo coloca
+        if se_puede_colocar(estado["propio"], casillas):
+            for (f, c) in casillas:
+                estado["propio"][f][c] = " B "
+            estado["barcos"].append(casillas)
+            break
+        else:
+            print("No puedes colocar este barco ahí")
+# Parte de Fran
+def limpiar_pantalla():
+    os.system("cls" if os.name == "nt" else "clear") # Parte de Fran (nt = windows usa cls / proxis = macOS/linux usa clear)
+# Parte de Fran
+def colocar_flota_manual(estado):
+    flota = [5, 4, 3, 3, 2]
+    for tam in flota:
+        limpiar_pantalla()
+        colocar_barco_manual(estado, tam)
+        
+        
+        
+        
 def inicializar_tablero(filas, columnas):
     tablero = []
     for _ in range(filas):
@@ -99,18 +144,34 @@ def disparar(atacante, defensor, fila, col):
 
 def pedir_coordenada():  # Funcion para pedir y validar coordenadas al usuario
     while True:
-        # Pedir coordenadas y poner en mayúscula por control de errores
-        coord = input("Introduce coordenada (letra y número): ").upper()
-        if len(coord) >= 2:  # Condicion para control de errores si solo seescribe 1 letra
-            # Convertir letra a número siendo A=0 || B=1 || C=2 etc...
-            fila = ord(coord[0]) - ord("A")
-            # Convierte número en índice siendo 1-->0 || 5-->4 || 10-->9
-            col = int(coord[1:]) - 1
+        while True:
+            coord = input("Introduce coordenada letra y numero: ").strip().upper()
+
+            #  mínimo 2 caracteres
+            if len(coord) < 2:
+                print("Coordenada inválida")
+                continue
+
+            # primera posición tiene que ser letra
+            letra = coord[0]
+            if not ("A" <= letra <= "J"):
+                print("Coordenada inválida")
+                continue
+
+            #  resto debe ser número
+            numero = coord[1:]
+            if not numero.isdigit():
+                print("Coordenada inválida")
+                continue
+
+            fila = ord(letra) - ord("A")
+            col = int(numero) - 1
+
+            # límites del tablero
             if 0 <= fila < 10 and 0 <= col < 10:
-                return fila, col  # Devuelve (fila y columna)
-        print("Coordenada inválida")
+                return fila, col
 
-
+            print("Coordenada inválida")
 def ha_perdido(estado):  # Comprueba los barcos hundidos fila por fila (B es la marca de la casilla donde hay barco sin tocar/hundir)
     for fila in estado["propio"]:
         if " B " in fila:  # Comprueba la B en cada fila y duevuelve False si la hay
@@ -250,45 +311,53 @@ def iniciar_1v1(tablero_aleatorio):
         # en el caso de elegir aleatorio se colocaran los barcos de ambos jugadores automaticamente
         colocar_flota(j1)
         colocar_flota(j2)
+    else:
+        
+        print("\nJugador 1: coloca tu flota (manual)")
+        colocar_flota_manual(j1)
 
-    print("\nJugador 1 - Tablero propio:")
-    # imprime el tablero del primer jugador mostrando los barcos
-    imprimir_tablero(j1["propio"], ocultar_barcos=False)
+        input("\nPulsa ENTER para pasar al Jugador 2...")
+        limpiar_pantalla()
 
-    print("\nJugador 1 - Tablero de disparos:")
-    # imprime el tablero de disparos del juagdor
-    imprimir_tablero(j1["disparos"], ocultar_barcos=False)
+        print("\nJugador 2: coloca tu flota (manual)")
+        colocar_flota_manual(j2)
 
-    print("\nJugador 2 - Tablero propio:")
-    # imprime el tablero del segundo jugador mostrando los barcos
+        input("\nPulsa ENTER para empezar la partida...")
+        limpiar_pantalla()
+        
+        
+    
 
-    imprimir_tablero(j2["propio"], ocultar_barcos=False)
-
-    print("\nJugador 2 - Tablero de disparos:")
-    # imprime el tablero de disparos del segundo jugador
-    imprimir_tablero(j2["disparos"], ocultar_barcos=False)
-
-    print("\nJugador 2 - Tablero de disparos:")
-    imprimir_tablero(j2["disparos"], ocultar_barcos=False)
 
     # hasta aqui lo de javier del dia 22
 
     # dia 29122025 trabajo javier
 
     while True:
+        print("\nJugador 1 - Tablero propio:")
+        # imprime el tablero del primer jugador mostrando los barcos
+        imprimir_tablero(j1["propio"], ocultar_barcos=False)
         # jugador1
-        print("\n tablero de disparos:")
+        print("\n tablero de disparos del primer jugador:")
         imprimir_tablero(j1["disparos"], ocultar_barcos=False)
         # pide las coordenadas al usuario
         fila, col = pedir_coordenada()
         # el jugador 1 dispara al jugador 2
         disparar(j1, j2, fila, col)
+        limpiar_pantalla()
+
         # comprueba si le quedan barcos al segundo jugador para determinar el ganador
         if ha_perdido(j2):
-            print("\nprimero jugador gana")
-            break
+            limpiar_pantalla()
+            print("\nJugador 1 gana")
+            return
 
         # jugador2
+        
+        print("\nJugador 2 - Tablero propio:")
+        # imprime el tablero del segundo jugador mostrando los barcos
+
+        imprimir_tablero(j2["propio"], ocultar_barcos=False)
         print("\ntablero de disparos:")
         # muestra tablero de disparos del segundo jugador
         imprimir_tablero(j2["disparos"], ocultar_barcos=False)
@@ -296,10 +365,13 @@ def iniciar_1v1(tablero_aleatorio):
         fila, col = pedir_coordenada()
         # jugador 2 dispara al 1
         disparar(j2, j1, fila, col)
+        limpiar_pantalla()
+
         # comprueba la cantidad de barcos del primer jugador para determinar al ganador
         if ha_perdido(j1):
-            print("\nsegundo jugador gana")
-            break
+            limpiar_pantalla()
+            print("\nJugador 2 gana")
+            return
 
         # dia 29122025 trabajo javier
 
@@ -322,8 +394,7 @@ if opcion == 2:
 # Limpia la pantalla de la consola para que otros jugadores no puedan ver tus movimientos
 
 
-def limpiar_pantalla():
-    os.system("cls" if os.name == "nt" else "clear")
+
 
 
 def barco_hundido(estado, fila, col):
@@ -339,51 +410,7 @@ def barco_hundido(estado, fila, col):
     return False
 
 
-# Colocación manual de barcos
 
-def colocar_barco_manual(estado, tamano):
-
-    # Muestra el tablero
-
-    imprimir_tablero(estado["propio"], ocultar_barcos=False)
-    print(f"Coloca un barco de tamaño {tamano}")
-
-    while True:
-        orientacion = input("Orientación (H/V): ").upper()
-        if orientacion not in ("H", "V"):
-            print("Orientación no válida")
-            continue
-
-            # pide la coordenada inicial
-        try:
-            fila, col = pedir_coordenada()
-        except:
-            print("Coordenada no válida")
-            continue
-
-            # genera las casillas que ocupará el barco
-        casillas = []
-        for i in range(tamano):
-            if orientacion == "H":
-                casillas.append((fila, col + i))
-            else:
-                casillas.append((fila + i, col))
-
-        # Comprueba si la casilla es válida para colocar el barco y lo coloca
-        if se_puede_colocar(estado["propio"], casillas):
-            for (f, c) in casillas:
-                estado["propio"][f][c] = " B "
-            estado["barcos"].append(casillas)
-            break
-        else:
-            print("No puedes colocar este barco ahí")
-
-
-def colocar_flota_manual(estado):
-    flota = [5, 4, 3, 3, 2]
-    for tam in flota:
-        limpiar_pantalla()
-        colocar_barco_manual(estado, tam)
 
 
 # Fran 31/12/2025 (Aquí implementamos el modo contra la IA con distintos niveles de dificultad)
@@ -458,9 +485,9 @@ def iniciar_vs_ia(nivel):
         # turno de la IA
 
         print("\nTurno de ChatGPT")
-        time.sleep(1)
+        time.sleep(1) # Pausa de un segundo
 
-        if nivel == "1":
+        if nivel == "1": # Aqui se vuelve a comprobar el switch que contenia los 3 posibles niveles de mi parte (Raúl)
             f, c = disparo_ia_facil()
         elif nivel == "2":
             f, c = disparo_ia_medio(jugador["propio"])
@@ -476,12 +503,7 @@ def iniciar_vs_ia(nivel):
 
 # Activacion de funciones según el menú
 
-# Si se eligió modo 1v1 en tu menú anterior
-try:
-    if opcion == 2:
-        iniciar_1v1(tablero_aleatorio)
-except:
-    pass
+
 
 # Si se eligió jugar vs IA
 try:
