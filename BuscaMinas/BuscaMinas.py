@@ -71,12 +71,21 @@ def imprimir_matriz(tablero):
     for fila in tablero:
         print(" ".join(map(str, fila)))
 
+def contar_minas_alrededor(tablero, f, c, filas, columnas, minaSimbolo):
+    conteo = 0
+    # Recorremos el cuadrado 3x3 alrededor de la casilla (f, c)
+    for i in range(max(0, f - 1), min(filas, f + 2)):
+        for j in range(max(0, c - 1), min(columnas, c + 2)):
+            if tablero[i][j] == minaSimbolo:
+                conteo += 1
+    return conteo
+
     #Pregunta al usuario la casilla que quiere marcar en un rango el 0-n
-def preguntar(tableroJuego, tableroCompleto, filas,columnas):
+def preguntar(tableroJuego, tableroCompleto, filas, columnas, minas, minaSimbolo, casillaCerrada):
     while True:
         #Si ganar devuelve true, paramos el flujo del codigo
-        if ganar(tableroJuego,filas,columnas):
-            print("GANASTE")
+        if ganar(tableroJuego,filas,columnas,minas,casillaCerrada):
+            print("GANASTE\nHas despejado todas las casillas!")
             break
         fila_prueba = int(input(f"Introduce la fila de 0 a {filas-1} : "))
         columna_prueba = int(input(f"Introduce la columna de 0 a {columnas-1}: "))
@@ -112,24 +121,23 @@ def preguntar(tableroJuego, tableroCompleto, filas,columnas):
 
     
     #Si los " . " son iguales al numero de minas existentes retornamos true
-def ganar(tableroJuego,filas, columnas):
-    puntos=0
+def ganar(tableroJuego, filas, columnas, minas, casillaCerrada):
+    puntos = 0
     for i in range(filas):
         for j in range(columnas):
             if tableroJuego[i][j] == casillaCerrada:
-                puntos+=1
-    if puntos==minas:
-        return True
+                puntos += 1
+    return puntos == minas
         
 def main(filas, columnas, minas, casillaCerrada, minaSimbolo):
     tableroCompleto, tableroJuego = inicializar_tablero(filas, columnas, casillaCerrada)
-
     tableroCompleto = colocar_minas(tableroCompleto, filas, columnas, minas, minaSimbolo)
+
     print("\nTABLERO QUE VERÁ EL JUGADOR\n")
     imprimir_matriz(tableroJuego)
     print("\n","-"*37, "\n")
     print("\nTABLERO COMPLETO PARA DEBUGGEAR\n")
     imprimir_matriz(tableroCompleto)
-    preguntar(tableroJuego,tableroCompleto, filas, columnas)
+    preguntar(tableroJuego,tableroCompleto, filas, columnas, minas, minaSimbolo, casillaCerrada)
 # Ejecución del programa
 main(filas, columnas, minas, casillaCerrada, minaSimbolo)
