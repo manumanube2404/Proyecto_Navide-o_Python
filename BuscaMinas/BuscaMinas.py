@@ -58,14 +58,12 @@ def colocar_minas(tablero, filas, columnas, minas, minaSimbolo):
     minas_colocadas = 0
     while minas_colocadas < minas: #filas/columnas - 1 para asegurar que está dentro de casillas
         # coordenadas aleatorias
-        filaRandom = random.randint(0, filas - 1)
-        columnaRandom = random.randint(0, columnas - 1)
-
+        fila, columna = random.randint(0, filas - 1), random.randint(0, columnas - 1)
         # La mina se va a representar como una X en el tablero completo para poder distinguirlo
-        if tablero[filaRandom][columnaRandom] != minaSimbolo:
-            tablero[filaRandom][columnaRandom] = minaSimbolo
+        # Si ya hay una mina en esa posición, no hacemos nada y volvemos a generar coordenadas
+        if tablero[fila][columna] != minaSimbolo:
+            tablero[fila][columna] = minaSimbolo
             minas_colocadas += 1
-
     # Retornamos el tablero modificado con las minas
     return tablero
 
