@@ -102,25 +102,40 @@ def preguntar(tableroJuego, tableroCompleto, filas, columnas, minas, minaSimbolo
         if ganar(tableroJuego,filas,columnas,minas,casillaCerrada):
             print("GANASTE\nHas despejado todas las casillas!")
             break
-        fila_prueba = int(input(f"Introduce la fila de 0 a {filas-1} : "))
-        columna_prueba = int(input(f"Introduce la columna de 0 a {columnas-1}: "))
-        minasCercanas=0
-        #Si el numero no es valido pide otro intento
-        if fila_prueba >= filas or columna_prueba >= columnas:
-            print("Esa posicion no existe, por favor vuelva a intentarlo")
-        else:
-            # Comprueba si la casilla es " 0 " en el mapa original
-            if tableroCompleto[fila_prueba][columna_prueba] != minaSimbolo:
-                #Los bucles comprueban los alrrededores de la casilla seleccionada para saber si hay minas cerca
-                #Llamamos a la funcion revelar_vacias para que revele todas las casillas vacías
-                revelar_vacias(tableroJuego, tableroCompleto, fila_prueba, columna_prueba, filas, columnas, casillaCerrada, minaSimbolo)
-                imprimir_matriz(tableroJuego)
+        
+        # añadimos validación en los inputs para manejar errores
+        try:
+            fila_prueba = int(input(f"Introduce la fila de 0 a {filas-1} : "))
+            columna_prueba = int(input(f"Introduce la columna de 0 a {columnas-1}: "))
+        except ValueError:
+            print("Error, introduce solo números íntegros")
+            continue #importante para que no se detenga el programa
 
-            else:
-                #Si en la posicion no hay un " 0 " significa que es una mina, por lo que el jugador perdio
-                imprimir_matriz(tableroCompleto)
-                print("PERDISTE")
-                break
+        # añadimos validación de rango
+        if not (0 <= fila_prueba < filas and 0 <= columna_prueba < columnas):
+            print(f"Error, esa posición no existe. El rango es de 0 a {filas - 1}")
+            continue
+        # añadimos validación para comprobar si la casilla seleccionada está ya abierta
+        if tableroJuego[fila_prueba][columna_prueba] != casillaCerrada:
+            print("Esa casilla ya está abierta chavalín, elige otra")
+            continue
+
+        minasCercanas = 0 #no se si es necesaria pero no la voy a borrar por si acaso
+        #Si el numero no es valido pide otro intento
+            # Comprueba si la casilla es " 0 " en el mapa original
+        
+        if tableroCompleto[fila_prueba][columna_prueba] == minaSimbolo:
+            #Si en la posicion no hay un " 0 " significa que es una mina, por lo que el jugador perdio
+            imprimir_matriz(tableroCompleto)
+            print("PERDISTE")
+            break
+
+        else:
+            #Los bucles comprueban los alrrededores de la casilla seleccionada para saber si hay minas cerca
+            #Llamamos a la funcion revelar_vacias para que revele todas las casillas vacías
+            revelar_vacias(tableroJuego, tableroCompleto, fila_prueba, columna_prueba, filas, columnas, casillaCerrada, minaSimbolo)
+            print("\nTablero actualizado:")
+            imprimir_matriz(tableroJuego)
 
     
     #Si los " . " son iguales al numero de minas existentes retornamos true
