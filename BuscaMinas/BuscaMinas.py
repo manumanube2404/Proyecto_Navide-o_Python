@@ -46,11 +46,9 @@ def inicializar_tablero(filas, columnas, casillaCerrada):
     tableroJuego = []
 
     for f in range(filas):
-        fila_completa = [" 0 "] * columnas
-        tableroCompleto.append(fila_completa)
+        tableroCompleto.append([" 0 "] * columnas)
 
-        fila_juego = [casillaCerrada] * columnas
-        tableroJuego.append(fila_juego)
+        tableroJuego.append([casillaCerrada] * columnas)
 
     return tableroCompleto, tableroJuego
 
