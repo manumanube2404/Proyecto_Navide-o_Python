@@ -80,6 +80,21 @@ def contar_minas_alrededor(tablero, f, c, filas, columnas, minaSimbolo):
                 conteo += 1
     return conteo
 
+def revelar_vacias(tableroJuego, tableroCompleto, f, c, filas, columnas, casillaCerrada, minaSimbolo):
+    # Si la casilla ya está revelada o es una mina, no hacemos nada
+    if tableroJuego[f][c] != casillaCerrada or tableroCompleto[f][c] == minaSimbolo:
+        return
+
+    # Si la casilla está cerrada y no es una mina, la revelamos
+    tableroJuego[f][c] = " " + str(contar_minas_alrededor(tableroCompleto, f, c, filas, columnas, minaSimbolo)) + " "
+
+    # Si no hay minas alrededor, revelamos las casillas adyacentes
+    if contar_minas_alrededor(tableroCompleto, f, c, filas, columnas, minaSimbolo) == 0:
+        for i in range(max(0, f - 1), min(filas, f + 2)):
+            for j in range(max(0, c - 1), min(columnas, c + 2)):
+                if tableroJuego[i][j] == casillaCerrada:
+                    revelar_vacias(tableroJuego, tableroCompleto, i, j, filas, columnas, casillaCerrada, minaSimbolo)
+
     #Pregunta al usuario la casilla que quiere marcar en un rango el 0-n
 def preguntar(tableroJuego, tableroCompleto, filas, columnas, minas, minaSimbolo, casillaCerrada):
     while True:
@@ -95,22 +110,10 @@ def preguntar(tableroJuego, tableroCompleto, filas, columnas, minas, minaSimbolo
             print("Esa posicion no existe, por favor vuelva a intentarlo")
         else:
             # Comprueba si la casilla es " 0 " en el mapa original
-            if tableroCompleto[fila_prueba][columna_prueba] == " 0 ":
+            if tableroCompleto[fila_prueba][columna_prueba] != minaSimbolo:
                 #Los bucles comprueban los alrrededores de la casilla seleccionada para saber si hay minas cerca
-                for i in range(-1,2):
-                    for j in range (-1,2):
-                        #Si las filas o las columnas no existen para la ejecucucion (>n)
-                        if i==1 and fila_prueba==filas-1: 
-                            break
-                        if j==1 and columna_prueba==columnas-1:
-                            break
-                        #Cuenta si en el mapa original hay alguna " X " cerca 
-                        if tableroCompleto[fila_prueba+i][columna_prueba+j] == minaSimbolo:
-                            #Si las filas o las columnas no existen para la ejecucucion (<n) 
-                            if fila_prueba+i!=-1 and columna_prueba+j!= -1:
-                                minasCercanas+=1
-
-                tableroJuego[fila_prueba][columna_prueba]= str(f" {minasCercanas} ")
+                #Llamamos a la funcion revelar_vacias para que revele todas las casillas vacías
+                revelar_vacias(tableroJuego, tableroCompleto, fila_prueba, columna_prueba, filas, columnas, casillaCerrada, minaSimbolo)
                 imprimir_matriz(tableroJuego)
 
             else:
