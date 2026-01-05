@@ -146,7 +146,23 @@ def ganar(tableroJuego, filas, columnas, minas, casillaCerrada):
             if tableroJuego[i][j] == casillaCerrada:
                 puntos += 1
     return puntos == minas
+    
+    #Pregunta al usuario si quiere volver a jugar
+def volver_jugar(filas, columnas, minas, casillaCerrada, minaSimbolo):
+    respuesta=input("Quieres volver a jugar? (s/n)").lower()
+    match respuesta:
+        #En caso de que si quiera, se ejecuta la funcion main
+        case "s":
+            main(filas, columnas, minas, casillaCerrada, minaSimbolo)
         
+        #En caso contrario, se sale del programa
+        case "n":
+            exit()
+        #Si el parametro no es el deseado,la funcion se llama así misma, repitiendo el bucle, hasta que introduzca un valor valido
+        case _:
+            print("Error, en el parametro de entrada")
+            volver_jugar(filas, columnas, minas, casillaCerrada, minaSimbolo)
+
 def main(filas, columnas, minas, casillaCerrada, minaSimbolo):
     tableroCompleto, tableroJuego = inicializar_tablero(filas, columnas, casillaCerrada)
     tableroCompleto = colocar_minas(tableroCompleto, filas, columnas, minas, minaSimbolo)
@@ -157,5 +173,6 @@ def main(filas, columnas, minas, casillaCerrada, minaSimbolo):
     print("\nTABLERO COMPLETO PARA DEBUGGEAR\n")
     imprimir_matriz(tableroCompleto)
     preguntar(tableroJuego,tableroCompleto, filas, columnas, minas, minaSimbolo, casillaCerrada)
+    volver_jugar(filas, columnas, minas, casillaCerrada, minaSimbolo)
 # Ejecución del programa
 main(filas, columnas, minas, casillaCerrada, minaSimbolo)

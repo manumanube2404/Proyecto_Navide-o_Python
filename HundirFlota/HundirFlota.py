@@ -182,7 +182,7 @@ def ha_perdido(estado):  # Comprueba los barcos hundidos fila por fila (B es la 
 # apartado realizado por javier 22/12/2025
 
 def imprimir_tablero(tablero, ocultar_barcos=False):
-    # Imprime arriba los números 1..10
+    # Imprime arriba los números 1 al 10
     print("    1  2  3  4  5  6  7  8  9 10")
     # cadena de letra que etiqueta a cada fina
     letras = "ABCDEFGHIJ"
@@ -212,7 +212,7 @@ def crear_estado_jugador(filas=10, columnas=10):
         "propio": inicializar_tablero(filas, columnas),
         # crea un tablero vacio que sirve para marcar los tiros que el jugador hace al rival
         "disparos": inicializar_tablero(filas, columnas),
-        # cada barco tendra una lista de casillas [(f,c), (f,c)...]
+        # cada barco tendra una lista de casillas con filas y columnas
         "barcos": []
     }
 
@@ -222,7 +222,7 @@ def crear_estado_jugador(filas=10, columnas=10):
 def se_puede_colocar(tablero, casillas):
     # numero de filas del talero
     filas = len(tablero)
-    # numero de columnas donde tablero[0] es la primera hasta el 10
+    # numero de columnas donde tablero 0 es la primera hasta el 10
     columnas = len(tablero[0])
     # recorre cada fila
     for (f, c) in casillas:
