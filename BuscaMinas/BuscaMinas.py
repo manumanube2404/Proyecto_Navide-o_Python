@@ -1,6 +1,5 @@
 import random
 
-# Texto inicial introductorio
 
 
 # Definición de variables
@@ -13,6 +12,7 @@ columnas = 0
 
 # redefinimos las variables según el nivel escogido
 def niveles():
+    # Texto inicial introductorio
     print("¡Bienvenido al Buscaminas de los pesaos!")
     nivel = input("\nElige el nivel (facil, medio, dificil): ").strip().lower()
     match nivel:
@@ -190,5 +190,7 @@ def main(filas, columnas, minas, casillaCerrada, minaSimbolo):
     # imprimir_matriz(tableroCompleto)
     preguntar(tableroJuego,tableroCompleto, filas, columnas, minas, minaSimbolo, casillaCerrada)
     volver_jugar(filas, columnas, minas, casillaCerrada, minaSimbolo)
+
+    
 # Ejecución del programa
 main(filas, columnas, minas, casillaCerrada, minaSimbolo)
