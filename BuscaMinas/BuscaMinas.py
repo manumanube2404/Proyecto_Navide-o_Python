@@ -1,43 +1,47 @@
 import random
 
 # Texto inicial introductorio
-print("¡Bienvenido al Buscaminas de los pesaos!")
-nivel = input("\nElige el nivel (facil, medio, dificil): ").strip().lower()
+
 
 # Definición de variables
 minas = 0
 casillaCerrada= " . "
 minaSimbolo = " X "
 numeros="1234567890"
-letras="ABCDEFGHIJ"
 filas = 0
 columnas = 0
 
 # redefinimos las variables según el nivel escogido
-match nivel:
-    case "facil":
-        print("\nDificultad fácil seleccionada.")
-        minas = 3
-        filas = 6
-        columnas = 6
+def niveles():
+    print("¡Bienvenido al Buscaminas de los pesaos!")
+    nivel = input("\nElige el nivel (facil, medio, dificil): ").strip().lower()
+    match nivel:
+        case "facil":
+            print("\nDificultad fácil seleccionada.")
+            minas = 3
+            filas = 6
+            columnas = 6
 
-    case "medio":
-        print("\nDificultad media seleccionada.")
-        minas = 6
-        filas = 8
-        columnas = 8
-
-    case "dificil":
-        print("\nDificultad máxima seleccionada.")
-        minas = 10
-        filas = 10
-        columnas = 10
-    case _: #el guión bajo en python significa "cualquier otro valor"
-        print("La dificultad '", nivel , "' no está reconocida por el programa. Seleccionando por defecto el modo fácil.")
-        minas = 3
-        filas = 6
-        columnas = 6
-print("\nPreparando tablero de", filas , "x", columnas, "con", minas , "minas...\n")
+        case "medio":
+            print("\nDificultad media seleccionada.")
+            minas = 6
+            filas = 8
+            columnas = 8
+        
+        case "dificil":
+            print("\nDificultad máxima seleccionada.")
+            minas = 10
+            filas = 10
+            columnas = 10
+        
+        case _: #el guión bajo en python significa "cualquier otro valor"
+            print("La dificultad '", nivel , "' no está reconocida por el programa. Seleccionando por defecto el modo fácil.")
+            minas = 3
+            filas = 6
+            columnas = 6
+        
+    print("\nPreparando tablero de", filas , "x", columnas, "con", minas , "minas...\n")
+    return minas, filas, columnas #devuelve los valores del codigo segun 
 
 # Necesitamos crear dos tableros, uno donde esté toda la información y otro que sea el que ve el jugador por consola. La lógica del juego se basará en ir actualizando el tablero que ve el jugador según las acciones que realice.
 # el tablero completo existeprinciplamente para que sea más claro en el debugging
@@ -68,8 +72,22 @@ def colocar_minas(tablero, filas, columnas, minas, minaSimbolo):
     return tablero
 
 def imprimir_matriz(tablero):
-    for fila in tablero:
-        print(" ".join(map(str, fila)))
+    filas = len(tablero) #numero de filas
+    columnas = len(tablero[0]) #numero de columnas
+
+    #columnas
+    print("     ", end="") #deja al principio  el espacio en blanco
+    for j in range(columnas):
+        print(f"{j}  ", end="")# va colocando los numeros de las columnas de 0 a n
+    print() #hace el salto de linea
+
+    # Filas
+    for i in range(filas):
+        print(f"{i} |", end=" ")
+        for j in range(columnas):
+            print(tablero[i][j], end="") #se imprime el resto del tablero " . "
+        print()
+
 
 def contar_minas_alrededor(tablero, f, c, filas, columnas, minaSimbolo):
     conteo = 0
@@ -120,9 +138,7 @@ def preguntar(tableroJuego, tableroCompleto, filas, columnas, minas, minaSimbolo
             print("Esa casilla ya está abierta chavalín, elige otra")
             continue
 
-        minasCercanas = 0 #no se si es necesaria pero no la voy a borrar por si acaso
-        #Si el numero no es valido pide otro intento
-            # Comprueba si la casilla es " 0 " en el mapa original
+       
         
         if tableroCompleto[fila_prueba][columna_prueba] == minaSimbolo:
             #Si en la posicion no hay un " 0 " significa que es una mina, por lo que el jugador perdio
@@ -164,14 +180,14 @@ def volver_jugar(filas, columnas, minas, casillaCerrada, minaSimbolo):
             volver_jugar(filas, columnas, minas, casillaCerrada, minaSimbolo)
 
 def main(filas, columnas, minas, casillaCerrada, minaSimbolo):
+    minas, filas, columnas = niveles()
     tableroCompleto, tableroJuego = inicializar_tablero(filas, columnas, casillaCerrada)
     tableroCompleto = colocar_minas(tableroCompleto, filas, columnas, minas, minaSimbolo)
-
-    print("\nTABLERO QUE VERÁ EL JUGADOR\n")
+    #print("\nTABLERO QUE VERÁ EL JUGADOR\n")
     imprimir_matriz(tableroJuego)
-    print("\n","-"*37, "\n")
-    print("\nTABLERO COMPLETO PARA DEBUGGEAR\n")
-    imprimir_matriz(tableroCompleto)
+    # print("\n","-"*37, "\n")
+    # print("\nTABLERO COMPLETO PARA DEBUGGEAR\n")
+    # imprimir_matriz(tableroCompleto)
     preguntar(tableroJuego,tableroCompleto, filas, columnas, minas, minaSimbolo, casillaCerrada)
     volver_jugar(filas, columnas, minas, casillaCerrada, minaSimbolo)
 # Ejecución del programa
