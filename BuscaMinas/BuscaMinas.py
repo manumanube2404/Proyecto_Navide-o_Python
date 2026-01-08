@@ -80,6 +80,7 @@ def imprimir_matriz(tablero):
     for j in range(columnas):
         print(f"{j}  ", end="")# va colocando los numeros de las columnas de 0 a n
     print() #hace el salto de linea
+    print("     " + "_  " * columnas) #linea separadora
 
     # Filas
     for i in range(filas):
